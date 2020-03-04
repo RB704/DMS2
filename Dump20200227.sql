@@ -24,33 +24,21 @@ DROP TABLE IF EXISTS `address`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `address` (
   `address_id` int NOT NULL,
-  `address_type` enum('same','different') DEFAULT NULL,
+  `address_type` bit(2) DEFAULT NULL,
   `current_address_line_1` varchar(45) DEFAULT NULL,
   `current_address_line_2` varchar(45) DEFAULT NULL,
   `current_city_id` int DEFAULT NULL,
-  `current_state_id` int DEFAULT NULL,
-  `current_country_id` int DEFAULT NULL,
   `permanent_address_line_1` varchar(45) DEFAULT NULL,
   `permanent_address_line_2` varchar(45) DEFAULT NULL,
   `permanent_city_id` int DEFAULT NULL,
-  `permanent_state_id` int DEFAULT NULL,
-  `permanent_country_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   PRIMARY KEY (`address_id`),
   KEY `user_id` (`user_id`),
   KEY `current_city_id` (`current_city_id`),
   KEY `permanent_city_id` (`permanent_city_id`),
-  KEY `current_state_id` (`current_state_id`),
-  KEY `permanent_state_id` (`permanent_state_id`),
-  KEY `permanent_country_id` (`permanent_country_id`),
-  KEY `current_country_id` (`current_country_id`),
   CONSTRAINT `address_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `address_ibfk_2` FOREIGN KEY (`current_city_id`) REFERENCES `city` (`city_id`),
-  CONSTRAINT `address_ibfk_3` FOREIGN KEY (`permanent_city_id`) REFERENCES `city` (`city_id`),
-  CONSTRAINT `address_ibfk_4` FOREIGN KEY (`current_state_id`) REFERENCES `state` (`state_id`),
-  CONSTRAINT `address_ibfk_5` FOREIGN KEY (`permanent_state_id`) REFERENCES `state` (`state_id`),
-  CONSTRAINT `address_ibfk_6` FOREIGN KEY (`permanent_country_id`) REFERENCES `country` (`country_id`),
-  CONSTRAINT `address_ibfk_7` FOREIGN KEY (`current_country_id`) REFERENCES `country` (`country_id`)
+  CONSTRAINT `address_ibfk_3` FOREIGN KEY (`permanent_city_id`) REFERENCES `city` (`city_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -60,7 +48,7 @@ CREATE TABLE `address` (
 
 LOCK TABLES `address` WRITE;
 /*!40000 ALTER TABLE `address` DISABLE KEYS */;
-INSERT INTO `address` VALUES (1,'same','d1-504','abc apartments, sec 80',1119,13,101,'d1-504','abc apartments',1119,13,101,2),(2,'same','d1-701','bcd apartments, sec 82',1119,13,101,'d1-701','bcd apartments, sec 82',1119,13,101,3),(3,'same','hno 657','sec 7',1119,13,101,'hno 657','sec 7',1119,13,101,4),(4,'same','hno 879','sec 7',1119,13,101,'hno 879','sec 7',1119,13,101,5),(5,'same','hno 4567','sec 7',1119,13,101,'hno 4567','sec 7',1119,13,101,7);
+INSERT INTO `address` VALUES (1,_binary '','d1-504','abc apartments, sec 80',1119,'d1-504','abc apartments',1119,2),(2,_binary '','d1-701','bcd apartments, sec 82',1119,'d1-701','bcd apartments, sec 82',1119,3),(3,_binary '','hno 657','sec 7',1119,'hno 657','sec 7',1119,4),(4,_binary '','hno 879','sec 7',1119,'hno 879','sec 7',1119,5),(5,_binary '','hno 4567','sec 7',1119,'hno 4567','sec 7',1119,7);
 /*!40000 ALTER TABLE `address` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,7 +162,9 @@ CREATE TABLE `contact` (
   `user_id` int DEFAULT NULL,
   PRIMARY KEY (`contact_id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `contact_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+  KEY `phone_code_id` (`phone_code_id`),
+  CONSTRAINT `contact_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `contact_ibfk_2` FOREIGN KEY (`phone_code_id`) REFERENCES `country` (`country_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -184,7 +174,7 @@ CREATE TABLE `contact` (
 
 LOCK TABLES `contact` WRITE;
 /*!40000 ALTER TABLE `contact` DISABLE KEYS */;
-INSERT INTO `contact` VALUES (1,91,'7865432123','9876543212',129,'8678985','8778788',2),(2,91,'7658905432','4566721878',129,'6789690','8778788',3),(3,91,'9876567843','6751785516',129,'9786558','8778788',4),(4,91,'8654324567','8565178818',129,'7878659','8778788',5),(5,91,'8765332567','6867891858',129,'5677899','8778788',7);
+INSERT INTO `contact` VALUES (1,101,'7865432123','9876543212',129,'8678985','8778788',2),(2,101,'7658905432','4566721878',129,'6789690','8778788',3),(3,101,'9876567843','6751785516',129,'9786558','8778788',4),(4,101,'8654324567','8565178818',129,'7878659','8778788',5),(5,101,'8765332567','6867891858',129,'5677899','8778788',7);
 /*!40000 ALTER TABLE `contact` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,10 +237,13 @@ DROP TABLE IF EXISTS `department_designation`;
 CREATE TABLE `department_designation` (
   `department_id` int NOT NULL,
   `designation_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
   KEY `department_id` (`department_id`),
   KEY `designation_id` (`designation_id`),
+  KEY `user_id` (`user_id`),
   CONSTRAINT `department_designation_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`department_id`),
-  CONSTRAINT `department_designation_ibfk_2` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`designation_id`)
+  CONSTRAINT `department_designation_ibfk_2` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`designation_id`),
+  CONSTRAINT `department_designation_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -260,7 +253,7 @@ CREATE TABLE `department_designation` (
 
 LOCK TABLES `department_designation` WRITE;
 /*!40000 ALTER TABLE `department_designation` DISABLE KEYS */;
-INSERT INTO `department_designation` VALUES (1,2),(2,3),(3,1),(4,4),(6,7),(6,7),(6,7);
+INSERT INTO `department_designation` VALUES (1,2,1),(2,3,2),(3,1,3),(4,4,4),(6,7,5),(6,7,6),(6,7,7);
 /*!40000 ALTER TABLE `department_designation` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -326,6 +319,36 @@ INSERT INTO `device` VALUES (1,'mobile','apple','iphone X',1,'2020-02-02',1,_bin
 UNLOCK TABLES;
 
 --
+-- Table structure for table `name`
+--
+
+DROP TABLE IF EXISTS `name`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `name` (
+  `name_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
+  `first_name` varchar(45) DEFAULT NULL,
+  `middle_name` varchar(45) DEFAULT NULL,
+  `last_name` varchar(45) DEFAULT NULL,
+  `relation_id` int DEFAULT NULL,
+  PRIMARY KEY (`name_id`),
+  KEY `relation_id` (`relation_id`),
+  CONSTRAINT `name_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `relation` (`relation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `name`
+--
+
+LOCK TABLES `name` WRITE;
+/*!40000 ALTER TABLE `name` DISABLE KEYS */;
+INSERT INTO `name` VALUES (1,1,'rajan','singh','kumar',1),(2,1,'suraj','singh','singh',2),(3,1,'uma','singh','singh',3),(4,1,'hanoor','singh','singh',4),(5,2,'manish','kumar','sharma',1),(6,2,'raju','kumar','sharma',2),(7,2,'vineeta','kumar','sharma',3),(8,2,'tanya','kumar','sharma',4),(9,3,'kiran',NULL,'singh',1),(10,3,'pv',NULL,'singh',2),(11,3,'kv',NULL,'singh',3),(12,4,'ram',NULL,'kumar',1),(13,4,'rakesh',NULL,'kumar',2),(14,4,'rajni',NULL,'kumar',3),(15,4,'jahanvi',NULL,'kumar',4),(16,5,'vaibhav',NULL,'rajput',1),(17,5,'umesh',NULL,'rajput',2),(18,5,'bhavna',NULL,'rajput',3),(19,5,'sheetal',NULL,'rajput',4),(20,6,'rinku',NULL,'sharma',1),(21,6,'gs',NULL,'sharma',2),(22,6,'megha',NULL,'sharma',3),(23,7,'kapil',NULL,'gupta',1),(24,7,'manav',NULL,'gupta',2),(25,7,'ranjani',NULL,'gupta',3);
+/*!40000 ALTER TABLE `name` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `permission`
 --
 
@@ -345,7 +368,7 @@ CREATE TABLE `permission` (
 
 LOCK TABLES `permission` WRITE;
 /*!40000 ALTER TABLE `permission` DISABLE KEYS */;
-INSERT INTO `permission` VALUES (1,'write'),(2,'read');
+INSERT INTO `permission` VALUES (1,'Accept  Device  Request'),(2,'Reject Device Request'),(3,'Add Device'),(4,'Remove Device'),(5,'Update Device Details'),(7,'View Allocated Device'),(8,'Update Password'),(9,'Add User'),(10,'Edit User'),(11,'Remove User'),(12,'View User'),(13,'Assign Permission to Role'),(14,'Assign Role to User'),(15,'Update User Details'),(16,'Request Device'),(17,'View Requested Device'),(18,'Report Faulty Device'),(19,'View Devices');
 /*!40000 ALTER TABLE `permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -382,10 +405,17 @@ DROP TABLE IF EXISTS `qualification`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `qualification` (
   `qualification_id` int NOT NULL,
-  `college` varchar(45) DEFAULT NULL,
-  `highest_qualification` varchar(45) DEFAULT NULL,
-  `languages_known` varchar(45) DEFAULT NULL,
+  `school_name_10th` varchar(45) DEFAULT NULL,
+  `10th_percentage` float DEFAULT NULL,
+  `school_name_12th` varchar(45) DEFAULT NULL,
+  `12th_percentage` float DEFAULT NULL,
+  `under_graduation_college_name` varchar(45) DEFAULT NULL,
+  `under_graduation_college_percentage` float DEFAULT NULL,
+  `post_graduation_college_name` varchar(45) DEFAULT NULL,
+  `post_graduation_college_percentage` varchar(45) DEFAULT NULL,
+  `skills` varchar(45) DEFAULT NULL,
   `user_id` int DEFAULT NULL,
+  `languages_spoken` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`qualification_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `qualification_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
@@ -398,8 +428,32 @@ CREATE TABLE `qualification` (
 
 LOCK TABLES `qualification` WRITE;
 /*!40000 ALTER TABLE `qualification` DISABLE KEYS */;
-INSERT INTO `qualification` VALUES (1,'nit','b.tech','java,python',NULL),(2,'iit','b.tech','angular, node',NULL),(3,'eit','b.tech','react,c#',NULL),(4,'mr','mba','java',NULL),(5,'ymca','mba','c',NULL);
+INSERT INTO `qualification` VALUES (1,'holy child public school',86,'holy child public school',84.56,'nit',79,'ymca','72','java,python',2,'hindi,english,spanish'),(2,'holy child public school',98,'holy child public school',64,'iit',76,'',NULL,'angular, node',3,'hindi,english'),(3,'holy child public school',76,'holy child public school',89,'eit',87,'',NULL,'react,c#',4,'hindi,english'),(4,'holy child public school',65,'holy child public school',49,'mr',68,'bit','70','java',5,'hindi,english,punjabi'),(5,'holy child public school',67,'holy child public school',69,'ymca',91,'cit','65.87','c,tableau',7,'hindi,english');
 /*!40000 ALTER TABLE `qualification` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `relation`
+--
+
+DROP TABLE IF EXISTS `relation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `relation` (
+  `relation_id` int NOT NULL,
+  `relation_name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`relation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `relation`
+--
+
+LOCK TABLES `relation` WRITE;
+/*!40000 ALTER TABLE `relation` DISABLE KEYS */;
+INSERT INTO `relation` VALUES (1,'self'),(2,'father'),(3,'mother'),(4,'spouse');
+/*!40000 ALTER TABLE `relation` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -511,8 +565,32 @@ CREATE TABLE `role_permission` (
 
 LOCK TABLES `role_permission` WRITE;
 /*!40000 ALTER TABLE `role_permission` DISABLE KEYS */;
-INSERT INTO `role_permission` VALUES (1,1),(1,2),(2,1),(2,2),(3,1),(3,2),(4,2);
+INSERT INTO `role_permission` VALUES (2,1),(2,2),(2,3),(2,4),(2,5),(2,7),(1,8),(1,9),(1,10),(1,11),(1,12),(1,13),(1,14),(3,10),(3,12),(3,15),(4,15),(4,16),(4,17),(4,18),(4,19);
 /*!40000 ALTER TABLE `role_permission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `salutation`
+--
+
+DROP TABLE IF EXISTS `salutation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `salutation` (
+  `salutation_id` int NOT NULL,
+  `salutation_name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`salutation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `salutation`
+--
+
+LOCK TABLES `salutation` WRITE;
+/*!40000 ALTER TABLE `salutation` DISABLE KEYS */;
+INSERT INTO `salutation` VALUES (1,'Mr'),(2,'Mrs'),(3,'Dr'),(4,'Miss');
+/*!40000 ALTER TABLE `salutation` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -580,41 +658,17 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `user_id` int NOT NULL AUTO_INCREMENT,
-  `user_first_name` varchar(45) DEFAULT NULL,
-  `user_middle_name` varchar(45) DEFAULT NULL,
-  `user_last_name` varchar(45) DEFAULT NULL,
+  `salutation_id` int DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
   `password` varchar(45) DEFAULT NULL,
-  `role_id` int DEFAULT NULL,
   `user_active` bit(1) DEFAULT NULL,
-  `department_id` int DEFAULT NULL,
-  `designation_id` int DEFAULT NULL,
   `date_of_joining` date DEFAULT NULL,
   `gender` enum('male','female','others') DEFAULT NULL,
-  `marital_status` enum('married','unmarried','divorced') DEFAULT NULL,
-  `user_desk_number` int DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
-  `blood_group` varchar(45) DEFAULT NULL,
-  `bank_detail_id` int DEFAULT NULL,
-  `address_id` int DEFAULT NULL,
-  `contact_id` int DEFAULT NULL,
-  `qualification_id` int DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
-  KEY `role_id` (`role_id`),
-  KEY `designation_id` (`designation_id`),
-  KEY `department_id` (`department_id`),
-  KEY `bank_detail_id` (`bank_detail_id`),
-  KEY `contact_id` (`contact_id`),
-  KEY `address_id` (`address_id`),
-  KEY `qualification_id` (`qualification_id`),
-  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
-  CONSTRAINT `user_ibfk_2` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`designation_id`),
-  CONSTRAINT `user_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `department` (`department_id`),
-  CONSTRAINT `user_ibfk_4` FOREIGN KEY (`bank_detail_id`) REFERENCES `bank_detail` (`bank_detail_id`),
-  CONSTRAINT `user_ibfk_5` FOREIGN KEY (`contact_id`) REFERENCES `contact` (`contact_id`),
-  CONSTRAINT `user_ibfk_6` FOREIGN KEY (`address_id`) REFERENCES `address` (`address_id`),
-  CONSTRAINT `user_ibfk_7` FOREIGN KEY (`qualification_id`) REFERENCES `qualification` (`qualification_id`)
+  KEY `salutation_id` (`salutation_id`),
+  CONSTRAINT `user_ibfk_8` FOREIGN KEY (`salutation_id`) REFERENCES `salutation` (`salutation_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -624,8 +678,35 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'rajan','singh','kumar','rajan@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',4,_binary '\0',1,2,'1990-07-02','male','married',1,'1992-01-02','a+',NULL,NULL,NULL,NULL),(2,'manish','kumar','sharma','manish@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',4,_binary '',2,3,'1995-07-02','male','unmarried',2,'1996-05-17','b-',1,1,1,1),(3,'kiran',NULL,'singh','kiran@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',4,_binary '',3,1,'1990-09-02','female','married',3,'1994-09-11','ab+',2,2,2,2),(4,'ram',NULL,'kumar','rkumar@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',4,_binary '',4,4,'1998-07-02','male','married',4,'1990-12-18','o-',3,3,3,3),(5,'vaibhav',NULL,'rajput','vrajput@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',3,_binary '',6,7,'1992-07-02','male','unmarried',5,'1983-03-19','ab-',4,4,4,4),(6,'rinku',NULL,'sharma','rsharma@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',1,_binary '',6,7,'1991-07-02','male','married',5,'1979-04-02','b+',NULL,NULL,NULL,NULL),(7,'kapil',NULL,'gupta','kgupta@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',2,_binary '',6,7,'1990-07-02','male','married',6,'1980-04-02','a+',5,5,5,5);
+INSERT INTO `user` VALUES (1,1,'rajan@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '\0','1990-07-02','male','1992-01-02'),(2,1,'manish@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1995-07-02','male','1996-05-17'),(3,2,'kiran@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1990-09-02','female','1994-09-11'),(4,1,'rkumar@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1998-07-02','male','1990-12-18'),(5,1,'vrajput@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1992-07-02','male','1983-03-19'),(6,1,'rsharma@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1991-07-02','male','1979-04-02'),(7,1,'kgupta@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1990-07-02','male','1980-04-02');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_personal_information`
+--
+
+DROP TABLE IF EXISTS `user_personal_information`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_personal_information` (
+  `user_personal_information_id` int NOT NULL,
+  `blood_group` varchar(45) DEFAULT NULL,
+  `user_id` varchar(45) DEFAULT NULL,
+  `marital_status` enum('married','divorced','unmarried') DEFAULT NULL,
+  `user_desk_number` int DEFAULT NULL,
+  PRIMARY KEY (`user_personal_information_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_personal_information`
+--
+
+LOCK TABLES `user_personal_information` WRITE;
+/*!40000 ALTER TABLE `user_personal_information` DISABLE KEYS */;
+INSERT INTO `user_personal_information` VALUES (1,'o+','1','married',1),(2,'b+','2','married',2),(3,'ab+','3','unmarried',3),(4,'o-','4','married',4),(5,'o+','5','married',5),(6,'o+','6','unmarried',6),(7,'ab-','7','unmarried',7);
+/*!40000 ALTER TABLE `user_personal_information` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -664,4 +745,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-03 15:05:51
+-- Dump completed on 2020-03-04 16:53:39
