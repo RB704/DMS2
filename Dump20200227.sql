@@ -332,9 +332,15 @@ CREATE TABLE `name` (
   `middle_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
   `relation_id` int DEFAULT NULL,
+  `salutation_id` int DEFAULT NULL,
   PRIMARY KEY (`name_id`),
   KEY `relation_id` (`relation_id`),
-  CONSTRAINT `name_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `relation` (`relation_id`)
+  KEY `user_id` (`user_id`),
+  KEY `salutation_id` (`salutation_id`),
+  CONSTRAINT `name_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `relation` (`relation_id`),
+  CONSTRAINT `name_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `name_ibfk_3` FOREIGN KEY (`salutation_id`) REFERENCES `salutation` (`salutation_id`),
+  CONSTRAINT `name_ibfk_4` FOREIGN KEY (`salutation_id`) REFERENCES `salutation` (`salutation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -344,7 +350,7 @@ CREATE TABLE `name` (
 
 LOCK TABLES `name` WRITE;
 /*!40000 ALTER TABLE `name` DISABLE KEYS */;
-INSERT INTO `name` VALUES (1,1,'rajan','singh','kumar',1),(2,1,'suraj','singh','singh',2),(3,1,'uma','singh','singh',3),(4,1,'hanoor','singh','singh',4),(5,2,'manish','kumar','sharma',1),(6,2,'raju','kumar','sharma',2),(7,2,'vineeta','kumar','sharma',3),(8,2,'tanya','kumar','sharma',4),(9,3,'kiran',NULL,'singh',1),(10,3,'pv',NULL,'singh',2),(11,3,'kv',NULL,'singh',3),(12,4,'ram',NULL,'kumar',1),(13,4,'rakesh',NULL,'kumar',2),(14,4,'rajni',NULL,'kumar',3),(15,4,'jahanvi',NULL,'kumar',4),(16,5,'vaibhav',NULL,'rajput',1),(17,5,'umesh',NULL,'rajput',2),(18,5,'bhavna',NULL,'rajput',3),(19,5,'sheetal',NULL,'rajput',4),(20,6,'rinku',NULL,'sharma',1),(21,6,'gs',NULL,'sharma',2),(22,6,'megha',NULL,'sharma',3),(23,7,'kapil',NULL,'gupta',1),(24,7,'manav',NULL,'gupta',2),(25,7,'ranjani',NULL,'gupta',3);
+INSERT INTO `name` VALUES (1,1,'rajan','singh','kumar',1,1),(2,1,'suraj','singh','singh',2,1),(3,1,'uma','singh','singh',3,4),(4,1,'hanoor','singh','singh',4,4),(5,2,'manish','kumar','sharma',1,1),(6,2,'raju','kumar','sharma',2,1),(7,2,'vineeta','kumar','sharma',3,4),(8,2,'tanya','kumar','sharma',4,4),(9,3,'kiran',NULL,'singh',1,1),(10,3,'pv',NULL,'singh',2,1),(11,3,'kv',NULL,'singh',3,NULL),(12,4,'ram',NULL,'kumar',1,NULL),(13,4,'rakesh',NULL,'kumar',2,NULL),(14,4,'rajni',NULL,'kumar',3,NULL),(15,4,'jahanvi',NULL,'kumar',4,NULL),(16,5,'vaibhav',NULL,'rajput',1,NULL),(17,5,'umesh',NULL,'rajput',2,NULL),(18,5,'bhavna',NULL,'rajput',3,NULL),(19,5,'sheetal',NULL,'rajput',4,NULL),(20,6,'rinku',NULL,'sharma',1,NULL),(21,6,'gs',NULL,'sharma',2,NULL),(22,6,'megha',NULL,'sharma',3,NULL),(23,7,'kapil',NULL,'gupta',1,NULL),(24,7,'manav',NULL,'gupta',2,NULL),(25,7,'ranjani',NULL,'gupta',3,NULL);
 /*!40000 ALTER TABLE `name` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -658,7 +664,6 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `user_id` int NOT NULL AUTO_INCREMENT,
-  `salutation_id` int DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
   `password` varchar(45) DEFAULT NULL,
   `user_active` bit(1) DEFAULT NULL,
@@ -666,9 +671,7 @@ CREATE TABLE `user` (
   `gender` enum('male','female','others') DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `email_UNIQUE` (`email`),
-  KEY `salutation_id` (`salutation_id`),
-  CONSTRAINT `user_ibfk_8` FOREIGN KEY (`salutation_id`) REFERENCES `salutation` (`salutation_id`)
+  UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -678,7 +681,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,1,'rajan@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '\0','1990-07-02','male','1992-01-02'),(2,1,'manish@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1995-07-02','male','1996-05-17'),(3,2,'kiran@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1990-09-02','female','1994-09-11'),(4,1,'rkumar@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1998-07-02','male','1990-12-18'),(5,1,'vrajput@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1992-07-02','male','1983-03-19'),(6,1,'rsharma@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1991-07-02','male','1979-04-02'),(7,1,'kgupta@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1990-07-02','male','1980-04-02');
+INSERT INTO `user` VALUES (1,'rajan@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '\0','1990-07-02','male','1992-01-02'),(2,'manish@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1995-07-02','male','1996-05-17'),(3,'kiran@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1990-09-02','female','1994-09-11'),(4,'rkumar@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1998-07-02','male','1990-12-18'),(5,'vrajput@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1992-07-02','male','1983-03-19'),(6,'rsharma@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1991-07-02','male','1979-04-02'),(7,'kgupta@gmail.com','8cb2237d0679ca88db6464eac60da96345513964',_binary '','1990-07-02','male','1980-04-02');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -692,10 +695,12 @@ DROP TABLE IF EXISTS `user_personal_information`;
 CREATE TABLE `user_personal_information` (
   `user_personal_information_id` int NOT NULL,
   `blood_group` varchar(45) DEFAULT NULL,
-  `user_id` varchar(45) DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
   `marital_status` enum('married','divorced','unmarried') DEFAULT NULL,
   `user_desk_number` int DEFAULT NULL,
-  PRIMARY KEY (`user_personal_information_id`)
+  PRIMARY KEY (`user_personal_information_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_personal_information_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -705,7 +710,7 @@ CREATE TABLE `user_personal_information` (
 
 LOCK TABLES `user_personal_information` WRITE;
 /*!40000 ALTER TABLE `user_personal_information` DISABLE KEYS */;
-INSERT INTO `user_personal_information` VALUES (1,'o+','1','married',1),(2,'b+','2','married',2),(3,'ab+','3','unmarried',3),(4,'o-','4','married',4),(5,'o+','5','married',5),(6,'o+','6','unmarried',6),(7,'ab-','7','unmarried',7);
+INSERT INTO `user_personal_information` VALUES (1,'o+',1,'married',1),(2,'b+',2,'married',2),(3,'ab+',3,'unmarried',3),(4,'o-',4,'married',4),(5,'o+',5,'married',5),(6,'o+',6,'unmarried',6),(7,'ab-',7,'unmarried',7);
 /*!40000 ALTER TABLE `user_personal_information` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -745,4 +750,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-04 16:53:39
+-- Dump completed on 2020-03-06 12:18:58
